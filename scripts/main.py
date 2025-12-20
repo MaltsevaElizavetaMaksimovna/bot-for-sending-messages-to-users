@@ -9,7 +9,9 @@ from scheduler import setup_schedule, schedule_loop
 
 def run_web():
     app = create_app()
-    app.run(host="0.0.0.0", port=8000, debug=False)
+    from config import WEB_HOST, WEB_PORT
+
+    app.run(host=WEB_HOST, port=WEB_PORT, debug=False)
 
 
 if __name__ == "__main__":

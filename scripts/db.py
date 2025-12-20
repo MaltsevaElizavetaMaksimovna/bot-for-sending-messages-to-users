@@ -8,7 +8,7 @@ _conn.row_factory = sqlite3.Row
 
 
 def init_db():
-    """Создаём таблицы, если ещё нет. на всякий случай"""
+    """Создаём таблицы, если ещё нет"""
     with _db_lock:
         cur = _conn.cursor()
         cur.execute("""
