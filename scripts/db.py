@@ -32,7 +32,7 @@ def init_db():
                 url_follow_amount INTEGER
             )
         """)
-        _conn.commit()
+
         cur.execute("""
             CREATE TABLE IF NOT EXISTS message_delivery (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -42,6 +42,7 @@ def init_db():
                 UNIQUE(message_id, chat_id)
             )
         """)
+        _conn.commit()
 
 
 def fetch_pending_messages():

@@ -2,7 +2,7 @@
 
 import threading
 from db import init_db
-from scripts.logging_config import setup_logging
+from logging_config import setup_logging
 from webapp import create_app
 from bot_logic import init_bot
 from scheduler import setup_schedule, schedule_loop

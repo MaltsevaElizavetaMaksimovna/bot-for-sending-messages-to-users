@@ -54,7 +54,7 @@ def send_message_to_recipients(bot: Bot, row) -> tuple[int, int]:
             bot.send_text(chat_id=chat_id, text=text)
             mark_delivered(msg_id, chat_id)   #важно: фиксируем успех по каждому
             sent_count += 1
-        except Exception as e:
+        except Exception:
             logger.exception("send failed msg_id=%s chat_id=%s", msg_id, chat_id)
 
     logger.info("msg_id=%s: sent %s/%s", msg_id, sent_count, len(recipients))
@@ -76,7 +76,7 @@ def check_and_send_messages(bot: Bot):
             if delivered_total >= total:
                 insert_feedback(row["id"], delivered_total, 0)
             else:
-                print(f"[WARN] msg_id={row['id']}: partial delivery {delivered_total}/{total}, will retry")
+                logger.warning("msg_id=%s: partial delivery %s/%s, will retry", row["id"], delivered_total, total)
 
 # ========== инициализация бота и handler'ов ==========
 
