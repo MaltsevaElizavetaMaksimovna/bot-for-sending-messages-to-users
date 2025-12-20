@@ -1,1 +1,1 @@
-# Telegram-bot-for-sending-messages-to-users
+# bot-for-sending-messages-to-users
