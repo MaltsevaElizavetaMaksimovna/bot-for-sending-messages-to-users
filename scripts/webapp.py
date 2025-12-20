@@ -2,6 +2,9 @@
 
 from flask import Flask, request, redirect, url_for, render_template_string, jsonify
 from .db import get_messages_with_stats, insert_message_query, get_message_stats
+import logging
+
+logger = logging.getLogger(__name__)
 
 INDEX_HTML = """
 <!doctype html>
@@ -54,6 +57,7 @@ def create_app() -> Flask:
         users_group = 1  # пока хардкод
 
         insert_message_query(message, message_time, users_group)
+        logger.info("web: created message time=%r len=%s users_group=%s", message_time, len(message), users_group)
         return redirect(url_for("index"))
 
     @app.route("/api/stats/<int:message_id>", methods=["GET"])

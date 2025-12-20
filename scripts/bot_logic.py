@@ -4,8 +4,10 @@ from bot.handler import MessageHandler
 
 from .config import TOKEN, DEFAULT_CHAT_IDS
 from .db import fetch_pending_messages, insert_feedback, get_delivered_chat_ids, mark_delivered
+import logging
 
 
+logger = logging.getLogger(__name__)
 def resolve_recipients(users_group: int) -> list[str]:
     """Пока просто хардкодим список чатов."""
     return DEFAULT_CHAT_IDS
@@ -25,7 +27,7 @@ def should_send(message_time_str: str, now_utc: datetime) -> bool:
         dt = dt.replace(tzinfo=timezone.utc)
         return dt <= now_utc
     except ValueError:
-        print(f"[WARN] bad message_time='{message_time_str}'")
+        logger.warning("bad message_time=%r", message_time_str)
         return False
 
 
@@ -53,9 +55,9 @@ def send_message_to_recipients(bot: Bot, row) -> tuple[int, int]:
             mark_delivered(msg_id, chat_id)   #важно: фиксируем успех по каждому
             sent_count += 1
         except Exception as e:
-            print(f"[ERROR] send msg_id={msg_id} to {chat_id}: {e}")
+            logger.exception("send failed msg_id=%s chat_id=%s", msg_id, chat_id)
 
-    print(f"[INFO] msg_id={msg_id}: delivered now {sent_count}/{len(to_send)}, total={len(recipients)}")
+    logger.info("msg_id=%s: sent %s/%s", msg_id, sent_count, len(recipients))
     return (len(delivered) + sent_count, len(recipients))
 
 
@@ -65,7 +67,7 @@ def check_and_send_messages(bot: Bot):
     if not rows:
         return
 
-    print(f"[INFO] check_and_send_messages: {len(rows)} candidate(s)")
+    logger.info("check_and_send_messages: %s candidate(s)", len(rows))
     for row in rows:
         if should_send(row["message_time"], now_utc):
             delivered_total, total = send_message_to_recipients(bot, row)
