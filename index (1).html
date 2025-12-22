@@ -1,0 +1,1762 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Рассылка</title>
+<style>
+  :root{
+    --bg:#ffffff;
+    --panel:#E7E7E7; /* Изменён на #E7E7E7 */
+    --header:#AFBFEF;
+    --accent:#915EB5;
+    --muted:#8a8a8a;
+    --white:#ffffff;
+    --card:#e6e6e6;
+    --shadow: rgba(0,0,0,0.1);
+    --maxw:1100px;
+    --support-bg: #AFBFEF;
+    font-size: 24px;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body{
+    margin:0;
+    padding:0;
+    background:var(--bg);
+    color:#222;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .header-background {
+    background-color: var(--header);
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 140px;
+    z-index: -1;
+  }
+
+  .main-container {
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    height: 100vh;
+    position: relative;
+  }
+
+  .container{
+    max-width:var(--maxw);
+    width:100%;
+    margin:0 auto;
+    background: transparent;
+    flex:1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+  }
+
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background: transparent;
+    padding:35px 28px 0 28px;
+    position: relative;
+    height: 100px;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .logo{
+    width:110px;
+    height:110px;
+    border-radius:6px;
+    background: #C4C4C4;
+  }
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 22px; /* Увеличено расстояние между элементами */
+    height: 100%; /* Занимает всю высоту хедера */
+  }
+  
+  nav a{
+    text-decoration:none;
+    color:var(--accent);
+    font-weight:600;
+  }
+  
+  /* Стили для ссылок "Аналитика" и "Рассылка" */
+  .nav-link {
+    font-size: 22px; /* Увеличенный размер шрифта */
+    display: flex;
+    align-items: center;
+    height: 100%; /* Занимает всю высоту навигации */
+    position: relative;
+    top: -8px; /* Сдвигаем выше от нижней строки */
+  }
+
+  main{
+    padding:28px;
+    flex:1;
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+  }
+
+  /* Единый серый блок с острыми углами */
+  .unified-panel {
+    background: var(--panel); /* #E7E7E7 */
+    border-radius: 0; /* Острые углы */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Чтобы внутренние элементы не выходили за границы */
+  }
+
+  /* Steps теперь внутри единого блока */
+  .steps-container {
+    background: var(--panel); /* Тот же цвет, что и у основного блока */
+    padding: 20px 20px 0 20px; /* Добавим отступ сверху, но не снизу */
+    width: 100%;
+  }
+  
+  .steps{
+    display:flex;
+    align-items:center;
+    justify-content:space-between; /* Равномерное распределение */
+    width: 100%;
+    max-width: 800px; /* Увеличена максимальная ширина */
+    margin: 0 auto;
+  }
+  
+  .step{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    cursor: pointer;
+    flex: 1; /* Занимает равное пространство */
+  }
+  
+  .circle{
+    width:56px;height:56px;border-radius:50%;
+    background:var(--white);
+    border:3px solid var(--panel);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;color:#333;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    margin-bottom: 8px;
+  }
+  
+  .step p{ 
+    margin:8px 0 0; 
+    font-size: 13px; 
+    color:#333; 
+    text-align: center;
+    min-height: 32px;
+  }
+  
+  .step.active .circle{
+    border-color:var(--accent);
+    box-shadow:0 2px 6px rgba(0, 0, 0, 0.2);
+  }
+  
+  .step:hover .circle {
+    border-color: #000;
+  }
+  
+  .step.active:hover .circle {
+    border-color: var(--accent);
+  }
+
+  /* Контентная часть в том же блоке */
+  .content-panel{
+    background: var(--panel); /* Тот же цвет #E7E7E7 */
+    padding: 25px;
+    min-height: 400px;
+    flex:1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .row{
+    display:flex;
+    gap:18px;
+    align-items:flex-start;
+    height: 100%;
+    flex: 1;
+  }
+
+  .left, .right{
+    background:transparent;
+  }
+  .left{ 
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .right{ 
+    display: none;
+  }
+
+  /* Обновленный textarea с фоном #E7E7E7 */
+  textarea{
+    width:100%;
+    min-height: 250px;
+    resize:vertical;
+    padding:15px;
+    border-radius:4px;
+    border:1px solid #ccc;
+    font-size:16px;
+    font-family: inherit;
+    background: var(--panel); /* #E7E7E7 */
+    flex: 1;
+    margin-bottom: 15px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+    color: #333;
+  }
+  
+  /* Плейсхолдер для textarea */
+  textarea::placeholder {
+    color: #666;
+  }
+  
+  .attach-row{
+    display:flex;
+    flex-direction: row;
+    gap:12px;
+    margin-top: 10px;
+    align-items: center;
+  }
+  .attach{
+    display:flex;
+    gap:8px;
+    align-items:center;
+    background:var(--card);
+    padding:12px;
+    border-radius:4px;
+    border: 1px solid #ccc;
+    flex: 1;
+  }
+  .attach button{
+    background:transparent;
+    border:0;
+    color:var(--accent);
+    cursor:pointer;
+    font-weight:700;
+    white-space: nowrap;
+    padding: 4px 8px;
+    transition: color 0.2s;
+  }
+  
+  .attach button:hover {
+    color: #7a4a9a;
+  }
+  
+  .attach input {
+    flex:1;
+    border:0;
+    background:transparent;
+    outline:none;
+    padding: 4px;
+  }
+
+  /* Стили для шага 2 "Кому" - простенькая схема */
+  .stepContent[data-content="2"] {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  
+  .simple-recipients {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 15px;
+  }
+  
+  .recipients-title {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    color: #333;
+  }
+  
+  .recipients-description {
+    margin: 0 0 20px 0;
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .simple-users-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  
+  .user-checkbox {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    background: var(--white);
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .user-checkbox:hover {
+    background-color: #f5f5f5;
+  }
+  
+  .user-checkbox input[type="checkbox"] {
+    margin-right: 12px;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+  }
+  
+  .user-checkbox-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  
+  .user-checkbox-name {
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 2px;
+  }
+  
+  .user-checkbox-email {
+    font-size: 13px;
+    color: #666;
+  }
+  
+  .user-date {
+    font-size: 12px;
+    color: #888;
+    margin-left: 10px;
+  }
+  
+  .simple-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  .action-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background-color 0.2s;
+  }
+  
+  .select-all-btn {
+    background-color: #f0f0f0;
+    color: #333;
+  }
+  
+  .select-all-btn:hover {
+    background-color: #e0e0e0;
+  }
+  
+  .deselect-all-btn {
+    background-color: #f0f0f0;
+    color: #333;
+  }
+  
+  .deselect-all-btn:hover {
+    background-color: #e0e0e0;
+  }
+  
+  .add-user-btn {
+    background-color: var(--accent);
+    color: white;
+  }
+  
+  .add-user-btn:hover {
+    background-color: #7a4a9a;
+  }
+  
+  .selected-summary {
+    background-color: var(--white);
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-top: 15px;
+  }
+  
+  .summary-title {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+  }
+  
+  .summary-text {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+  }
+  
+  .summary-text strong {
+    color: #333;
+  }
+
+  /* Модальное окно для добавления пользователя */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .modal {
+    background-color: white;
+    border-radius: 8px;
+    padding: 30px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+  
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .modal-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .close-modal {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+  }
+  
+  .close-modal:hover {
+    color: #333;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .form-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 30px;
+  }
+  
+  .btn-secondary {
+    padding: 10px 20px;
+    background-color: #f0f0f0;
+    color: #333;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  
+  .btn-primary {
+    padding: 10px 20px;
+    background-color: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  
+  .btn-primary:hover {
+    background-color: #7a4a9a;
+  }
+
+  /* Стили для шага 3 "Дата" */
+  .stepContent[data-content="3"] {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  
+  .date-container {
+    display: flex;
+    gap: 30px;
+    flex: 1;
+  }
+  
+  .calendar-container {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .calendar {
+    background-color: var(--white);
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .calendar-month {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .calendar-nav {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .calendar-nav-btn {
+    background: none;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    color: #333;
+  }
+  
+  .calendar-nav-btn:hover {
+    background-color: #f5f5f5;
+  }
+  
+  .calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #666;
+    font-size: 14px;
+  }
+  
+  .calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+  }
+  
+  .calendar-day {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: background-color 0.2s;
+  }
+  
+  .calendar-day:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .calendar-day.selected {
+    background-color: var(--accent);
+    color: white;
+    font-weight: 600;
+  }
+  
+  .calendar-day.other-month {
+    color: #aaa;
+  }
+  
+  .calendar-day.today {
+    border: 2px solid var(--accent);
+  }
+  
+  .time-settings {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .time-input-container {
+    background-color: var(--white);
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  .time-input-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #333;
+  }
+  
+  .time-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
+  
+  .send-now-container {
+    background-color: var(--white);
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-top: auto;
+  }
+  
+  .send-now-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #333;
+  }
+  
+  .send-now-description {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+  
+  .send-now-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .send-now-btn:hover {
+    background-color: #7a4a9a;
+  }
+
+  /* Стили для шага 4 "Демка" */
+  .stepContent[data-content="4"] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    padding: 20px;
+  }
+  
+  .demo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+  }
+  
+  .demo-preview {
+    background-color: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    width: 100%;
+    padding: 30px;
+    margin-bottom: 30px;
+    border: 1px solid #ddd;
+  }
+  
+  .demo-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .demo-message {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-left: 4px solid var(--accent);
+  }
+  
+  .demo-message-text {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #333;
+    margin-bottom: 15px;
+    white-space: pre-line;
+  }
+  
+  .demo-attachments {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 15px;
+  }
+  
+  .demo-attachment {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #555;
+  }
+  
+  .demo-attachment-icon {
+    margin-right: 8px;
+    color: var(--accent);
+    font-weight: bold;
+  }
+  
+  .demo-recipients {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+  }
+  
+  .demo-recipients-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 8px;
+  }
+  
+  .demo-recipients-count {
+    font-size: 13px;
+    color: #777;
+  }
+  
+  .demo-actions {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .publish-btn {
+    padding: 15px 40px;
+    background-color: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+    box-shadow: 0 4px 12px rgba(145, 94, 181, 0.3);
+  }
+  
+  .publish-btn:hover {
+    background-color: #7a4a9a;
+    transform: translateY(-2px);
+  }
+  
+  .publish-btn:active {
+    transform: translateY(0);
+  }
+
+  .support-footer {
+    background-color: var(--support-bg);
+    color: #222;
+    padding: 30px 20px;
+    margin-top: 2px; 
+    width: 100%;
+  }
+  
+  .support-container {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+  }
+  
+  .support-section {
+    flex: 0 1 300px;
+    min-width: 250px;
+    text-align: center;
+  }
+  
+  .support-title {
+    color: #222;
+    font-size: 18px;
+    margin-bottom: 15px;
+    font-weight: 600;
+  }
+  
+  .support-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .support-links li {
+    margin-bottom: 10px;
+  }
+  
+  .support-links a {
+    font-size: 15px;
+    color: #333;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  
+  .support-links a:hover {
+    color: #000;
+    text-decoration: underline;
+  }
+  
+  .contact-info {
+    font-size: 15px;
+    color: #333;
+    line-height: 1.6;
+  }
+  
+  .contact-info a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  
+  .contact-info a:hover {
+    text-decoration: underline;
+  }
+  
+  .copyright {
+    text-align: center;
+    padding-top: 5px;
+    margin-top: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    color: #444;
+    font-size: 14px;
+    width: 100%;
+  }
+
+  .muted{ color:var(--muted); font-size:13px; }
+  .small{ font-size:13px; color:#333; }
+
+  @media (max-width:900px){
+    .row{ flex-direction:column; }
+    .support-container {
+      flex-direction: column;
+      gap: 20px;
+    }
+    .attach-row {
+      flex-direction: column;
+    }
+    .unified-panel {
+      max-width: 95%;
+    }
+    
+    .simple-actions {
+      flex-direction: column;
+    }
+    
+    .action-btn {
+      width: 100%;
+    }
+    
+    .date-container {
+      flex-direction: column;
+    }
+    
+    .time-settings {
+      margin-top: 20px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .header-background {
+      height: 120px;
+    }
+    
+    header {
+      flex-direction: column;
+      gap: 15px;
+      padding: 15px 15px 0 15px;
+      height: auto;
+    }
+    
+    nav {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .nav-link {
+      font-size: 18px; /* Немного уменьшаем на мобильных */
+      top: -5px; /* Меньший сдвиг на мобильных */
+    }
+    
+    main {
+      padding: 20px 15px;
+      margin-top: 15px;
+    }
+    
+    .unified-panel {
+      max-width: 95%;
+    }
+    
+    .steps-container, .content-panel {
+      padding: 15px;
+    }
+    
+    .steps {
+      max-width: 600px;
+    }
+    
+    .demo-preview {
+      padding: 20px;
+    }
+    
+    .modal {
+      width: 95%;
+      padding: 20px;
+    }
+  }
+  
+  @media (max-width: 650px) {
+    .steps {
+      max-width: 500px;
+    }
+    
+    .step p {
+      font-size: 12px;
+      min-height: 30px;
+    }
+  }
+  
+  @media (max-width: 600px) {
+    .steps {
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+    }
+    
+    .step {
+      flex: 0 0 calc(50% - 15px);
+      margin-bottom: 10px;
+    }
+    
+    .circle {
+      width: 50px;
+      height: 50px;
+    }
+    
+    .attach {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    
+    .attach button {
+      align-self: flex-start;
+    }
+    
+    .nav-link {
+      font-size: 16px;
+      top: -3px;
+    }
+    
+    .calendar-days {
+      gap: 4px;
+    }
+    
+    .calendar-day {
+      height: 35px;
+      font-size: 14px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .steps {
+      max-width: 400px;
+    }
+    
+    .step {
+      flex: 0 0 calc(50% - 10px);
+    }
+    
+    .step p {
+      font-size: 11px;
+    }
+    
+    .circle {
+      width: 45px;
+      height: 45px;
+    }
+    
+    .calendar {
+      padding: 15px;
+    }
+    
+    .calendar-day {
+      height: 30px;
+      font-size: 13px;
+    }
+  }
+</style>
+</head>
+<body>
+  <!-- Верхняя цветная часть - уменьшена -->
+  <div class="header-background"></div>
+  
+  <div class="main-container">
+    <div class="container" role="main">
+      <!-- Хедер с элементами на цветной полосе -->
+      <header>
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            
+            
+          </div>
+        </div>
+        <nav>
+          <a href="#" id="analyticsLink" class="nav-link">Аналитика</a>
+          <a href="#" id="mailingsLink" class="nav-link">Рассылка</a>
+          <!-- Фиолетовый кружок для профиля -->
+          <a href="#" title="Профиль" style="margin-left:16px; background:var(--accent); width:80px; height:80px; display:inline-block; border-radius:50%"></a>
+        </nav>
+      </header>
+
+      <main>
+        <div class="unified-panel">
+          <!-- Шаги теперь в верхней части единого блока -->
+          <div class="steps-container">
+            <div class="steps" aria-hidden="false">
+              <div class="step active" data-step="1"><div class="circle">1</div><p>Наполнение</p></div>
+              <div class="step" data-step="2"><div class="circle">2</div><p>Кому</p></div>
+              <div class="step" data-step="3"><div class="circle">3</div><p>Дата</p></div>
+              <div class="step" data-step="4"><div class="circle">4</div><p>Демка</p></div>
+            </div>
+          </div>
+
+          <!-- Контентная часть в том же блоке -->
+          <section class="content-panel" id="stepPanel">
+            <!-- Step 1 - Наполнение -->
+            <div class="stepContent" data-content="1">
+              <div class="row">
+                <div class="left">
+                  <textarea id="messageText" placeholder="Введите текст вашего сообщения...">Привет! 
+
+Мы рады сообщить вам о новых возможностях нашего сервиса. Теперь вы можете использовать расширенные функции аналитики и настраивать автоматические рассылки.
+
+Ссылка на документацию: https://example.com/docs
+
+С уважением,
+Команда поддержки</textarea>
+
+                  <div class="attach-row">
+                    <div class="attach">
+                      <button id="addLink">+ Прикрепить ссылку</button>
+                      <input type="text" id="linkInput" placeholder="URL (опционально)" value="https://example.com/docs">
+                    </div>
+                    <div class="attach">
+                      <button id="addFile">+ Прикрепить файл</button>
+                      <input type="text" id="fileInput" placeholder="Файл (опционально)" value="Инструкция.pdf">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Step 2 - Кому -->
+            <div class="stepContent" data-content="2" style="display: none;">
+              <div class="simple-recipients">
+                <h3 class="recipients-title">Выберите получателей</h3>
+                <p class="recipients-description">Отметьте пользователей, которым нужно отправить рассылку</p>
+                
+                <div class="simple-users-list" id="simpleUsersList">
+                  <!-- Список пользователей с чекбоксами будет добавлен динамически -->
+                </div>
+                
+                <div class="simple-actions">
+                  <div>
+                    <button class="action-btn select-all-btn" id="selectAllBtn">Выбрать всех</button>
+                    <button class="action-btn deselect-all-btn" id="deselectAllBtn">Снять все</button>
+                  </div>
+                  <button class="action-btn add-user-btn" id="addUserBtn">+ Добавить пользователя</button>
+                </div>
+                
+                <div class="selected-summary">
+                  <div class="summary-title">Итог выбора:</div>
+                  <div class="summary-text">
+                    Выбрано <strong id="selectedUsersCount">0</strong> пользователей из <strong id="totalUsersCount">0</strong>.
+                    <span id="selectedUsersNames">Никто не выбран.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Step 3 - Дата -->
+            <div class="stepContent" data-content="3" style="display: none;">
+              <div class="date-container">
+                <!-- Блок с календариком слева -->
+                <div class="calendar-container">
+                  <div class="calendar">
+                    <div class="calendar-header">
+                      <div class="calendar-month" id="currentMonth">Апрель 2025</div>
+                      <div class="calendar-nav">
+                        <button class="calendar-nav-btn" id="prevMonth">‹</button>
+                        <button class="calendar-nav-btn" id="nextMonth">›</button>
+                      </div>
+                    </div>
+                    
+                    <div class="calendar-weekdays">
+                      <div>Пн</div>
+                      <div>Вт</div>
+                      <div>Ср</div>
+                      <div>Чт</div>
+                      <div>Пт</div>
+                      <div>Сб</div>
+                      <div>Вс</div>
+                    </div>
+                    
+                    <div class="calendar-days" id="calendarDays">
+                      <!-- Дни будут добавлены динамически -->
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Блок справа с временем и отправкой -->
+                <div class="time-settings">
+                  <div class="time-input-container">
+                    <div class="time-input-title">Вписать время</div>
+                    <input type="time" class="time-input" id="timeInput" value="14:30">
+                    <div class="small">Укажите время отправки рассылки</div>
+                  </div>
+                  
+                  <div class="send-now-container">
+                    <div class="send-now-title">Отправить сейчас</div>
+                    <div class="send-now-description">Рассылка будет отправлена немедленно всем выбранным пользователям</div>
+                    <button class="send-now-btn" id="sendNowBtn">Отправить сейчас</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Step 4 - Демка -->
+            <div class="stepContent" data-content="4" style="display: none;">
+              <div class="demo-container">
+                <!-- Белый центральный блок с демо -->
+                <div class="demo-preview">
+                  <div class="demo-title">Как будет выглядеть рассылка:</div>
+                  
+                  <div class="demo-message">
+                    <div class="demo-message-text" id="demoMessageText">
+                      Привет! 
+
+                      Мы рады сообщить вам о новых возможностях нашего сервиса. Теперь вы можете использовать расширенные функции аналитики и настраивать автоматические рассылки.
+
+                      Ссылка на документацию: https://example.com/docs
+
+                      С уважением,
+                      Команда поддержки
+                    </div>
+                    
+                    <div class="demo-attachments">
+                      <div class="demo-attachment">
+                        <span class="demo-attachment-icon">🔗</span>
+                        Ссылка: https://example.com/docs
+                      </div>
+                      <div class="demo-attachment">
+                        <span class="demo-attachment-icon">📎</span>
+                        Файл: Инструкция.pdf
+                      </div>
+                    </div>
+                    
+                    <div class="demo-recipients">
+                      <div class="demo-recipients-title">Получатели:</div>
+                      <div class="demo-recipients-count" id="demoRecipientsCount">0 пользователей</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Кнопка опубликовать -->
+                <div class="demo-actions">
+                  <button class="publish-btn" id="publishBtn">Опубликовать рассылку</button>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+      
+    </div>
+
+    <!-- Футер поддержки -->
+    <footer class="support-footer">
+      <div class="support-container">
+        <div class="support-section">
+          <h3 class="support-title">Поддержка</h3>
+          <ul class="support-links">
+          </ul>
+        </div>
+        
+        <div class="support-section">
+          <h3 class="support-title">Контакты</h3>
+          <div class="contact-info">
+            <p>Телефон: <a href="tel:"></a></p>
+            <p>Email: <a href=""></a></p>
+            <p>Чат поддержки: круглосуточно</p>
+          </div>
+        </div>
+        
+        <div class="support-section">
+          <h3 class="support-title">Ресурсы</h3>
+          <ul class="support-links">
+          </ul>
+        </div>
+        
+        <div class="copyright">
+          © 2025 
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Модальное окно для добавления пользователя -->
+  <div class="modal-overlay" id="addUserModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Добавить пользователя</h3>
+        <button class="close-modal" id="closeModal">&times;</button>
+      </div>
+      
+      <form id="addUserForm">
+        <div class="form-group">
+          <label class="form-label" for="userName">Имя пользователя</label>
+          <input type="text" id="userName" class="form-input" required placeholder="Введите имя">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label" for="userEmail">Email</label>
+          <input type="email" id="userEmail" class="form-input" required placeholder="Введите email">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label" for="userPhone">Телефон (опционально)</label>
+          <input type="tel" id="userPhone" class="form-input" placeholder="Введите телефон">
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" id="cancelAddUser">Отмена</button>
+          <button type="submit" class="btn-primary">Добавить пользователя</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Делаем кружки кликабельными и переключаем шаги
+    document.querySelectorAll('.step').forEach(step => {
+      step.addEventListener('click', function() {
+        const stepNumber = this.getAttribute('data-step');
+        
+        // Убираем активный класс у всех шагов
+        document.querySelectorAll('.step').forEach(s => {
+          s.classList.remove('active');
+        });
+        
+        // Добавляем активный класс текущему шагу
+        this.classList.add('active');
+        
+        // Скрываем все содержимое шагов
+        document.querySelectorAll('.stepContent').forEach(content => {
+          content.style.display = 'none';
+        });
+        
+        // Показываем содержимое текущего шага
+        const activeContent = document.querySelector(`.stepContent[data-content="${stepNumber}"]`);
+        if (activeContent) {
+          if (stepNumber === '4') {
+            activeContent.style.display = 'flex';
+          } else {
+            activeContent.style.display = 'block';
+          }
+        }
+        
+        // При переходе на шаг 4 обновляем демо
+        if (stepNumber === '4') {
+          updateDemoPreview();
+        }
+      });
+    });
+    
+    // Обработка кнопки добавления ссылки
+    document.getElementById('addLink').addEventListener('click', function() {
+      const linkInput = document.getElementById('linkInput');
+      if (linkInput.value.trim()) {
+        alert('Ссылка добавлена: ' + linkInput.value);
+      } else {
+        alert('Введите URL ссылки');
+      }
+    });
+    
+    // Обработка кнопки добавления файла
+    document.getElementById('addFile').addEventListener('click', function() {
+      const fileInput = document.getElementById('fileInput');
+      if (fileInput.value.trim()) {
+        alert('Файл добавлен: ' + fileInput.value);
+      } else {
+        alert('Укажите имя файла');
+      }
+    });
+    
+    // Начальные данные пользователей (пустой массив)
+    let usersData = [];
+    
+    // Массив для хранения выбранных пользователей
+    let selectedUsers = [];
+    
+    // Генератор ID для новых пользователей
+    let nextUserId = 1;
+    
+    // Функция для сохранения пользователей в localStorage
+    function saveUsersToStorage() {
+      localStorage.setItem('mailingUsers', JSON.stringify(usersData));
+      localStorage.setItem('nextUserId', nextUserId.toString());
+    }
+    
+    // Функция для загрузки пользователей из localStorage
+    function loadUsersFromStorage() {
+      const savedUsers = localStorage.getItem('mailingUsers');
+      const savedNextId = localStorage.getItem('nextUserId');
+      
+      if (savedUsers) {
+        usersData = JSON.parse(savedUsers);
+      }
+      
+      if (savedNextId) {
+        nextUserId = parseInt(savedNextId);
+      }
+    }
+    
+    // Функция обновления списка пользователей
+    function updateUsersList() {
+      const usersList = document.getElementById('simpleUsersList');
+      const selectedCount = document.getElementById('selectedUsersCount');
+      const totalCount = document.getElementById('totalUsersCount');
+      const selectedNames = document.getElementById('selectedUsersNames');
+      
+      // Обновляем общее количество
+      totalCount.textContent = usersData.length;
+      
+      // Очищаем список
+      usersList.innerHTML = '';
+      
+      if (usersData.length === 0) {
+        const emptyMessage = document.createElement('div');
+        emptyMessage.className = 'empty-list';
+        emptyMessage.innerHTML = `
+          <div style="text-align: center; padding: 20px; color: #888; font-style: italic;">
+            Пользователи не добавлены. Нажмите "Добавить пользователя" для добавления.
+          </div>
+        `;
+        usersList.appendChild(emptyMessage);
+      } else {
+        // Добавляем пользователей в список с чекбоксами
+        usersData.forEach(user => {
+          const isSelected = selectedUsers.some(u => u.id === user.id);
+          
+          const userItem = document.createElement('div');
+          userItem.className = 'user-checkbox';
+          
+          // Форматируем дату добавления
+          const addedDate = new Date(user.addedDate);
+          const formattedDate = addedDate.toLocaleDateString('ru-RU', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+          });
+          
+          userItem.innerHTML = `
+            <input type="checkbox" id="user-${user.id}" ${isSelected ? 'checked' : ''}>
+            <div class="user-checkbox-info">
+              <div class="user-checkbox-name">${user.name}</div>
+              <div class="user-checkbox-email">${user.email}</div>
+            </div>
+            <div class="user-date">Добавлен: ${formattedDate}</div>
+          `;
+          
+          usersList.appendChild(userItem);
+          
+          // Добавляем обработчик для чекбокса
+          const checkbox = userItem.querySelector(`#user-${user.id}`);
+          checkbox.addEventListener('change', function() {
+            if (this.checked) {
+              // Добавляем пользователя в выбранные
+              if (!selectedUsers.some(u => u.id === user.id)) {
+                selectedUsers.push(user);
+              }
+            } else {
+              // Удаляем пользователя из выбранных
+              selectedUsers = selectedUsers.filter(u => u.id !== user.id);
+            }
+            updateSummary();
+          });
+        });
+      }
+      
+      updateSummary();
+    }
+    
+    // Функция обновления итоговой информации
+    function updateSummary() {
+      const selectedCount = document.getElementById('selectedUsersCount');
+      const selectedNames = document.getElementById('selectedUsersNames');
+      
+      // Обновляем счетчик
+      selectedCount.textContent = selectedUsers.length;
+      
+      // Обновляем список имен
+      if (selectedUsers.length === 0) {
+        selectedNames.textContent = "Никто не выбран.";
+      } else if (selectedUsers.length === usersData.length) {
+        selectedNames.textContent = "Выбраны все пользователи.";
+      } else if (selectedUsers.length <= 3) {
+        const names = selectedUsers.map(u => u.name).join(', ');
+        selectedNames.textContent = `Выбраны: ${names}.`;
+      } else {
+        const firstNames = selectedUsers.slice(0, 3).map(u => u.name).join(', ');
+        selectedNames.textContent = `Выбраны: ${firstNames} и еще ${selectedUsers.length - 3} пользователей.`;
+      }
+    }
+    
+    // Обработка кнопки "Выбрать всех"
+    document.getElementById('selectAllBtn').addEventListener('click', function() {
+      if (usersData.length > 0) {
+        selectedUsers = [...usersData];
+        updateUsersList();
+      }
+    });
+    
+    // Обработка кнопки "Снять все"
+    document.getElementById('deselectAllBtn').addEventListener('click', function() {
+      selectedUsers = [];
+      updateUsersList();
+    });
+    
+    // Обработка кнопки "Добавить пользователя"
+    document.getElementById('addUserBtn').addEventListener('click', function() {
+      document.getElementById('addUserModal').style.display = 'flex';
+    });
+    
+    // Закрытие модального окна
+    document.getElementById('closeModal').addEventListener('click', function() {
+      document.getElementById('addUserModal').style.display = 'none';
+      document.getElementById('addUserForm').reset();
+    });
+    
+    document.getElementById('cancelAddUser').addEventListener('click', function() {
+      document.getElementById('addUserModal').style.display = 'none';
+      document.getElementById('addUserForm').reset();
+    });
+    
+    // Закрытие модального окна при клике на оверлей
+    document.getElementById('addUserModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        this.style.display = 'none';
+        document.getElementById('addUserForm').reset();
+      }
+    });
+    
+    // Обработка формы добавления пользователя
+    document.getElementById('addUserForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const userName = document.getElementById('userName').value.trim();
+      const userEmail = document.getElementById('userEmail').value.trim();
+      const userPhone = document.getElementById('userPhone').value.trim();
+      
+      if (!userName || !userEmail) {
+        alert('Пожалуйста, заполните обязательные поля: имя и email');
+        return;
+      }
+      
+      // Проверка уникальности email
+      if (usersData.some(user => user.email === userEmail)) {
+        alert('Пользователь с таким email уже существует');
+        return;
+      }
+      
+      // Создание нового пользователя
+      const newUser = {
+        id: nextUserId++,
+        name: userName,
+        email: userEmail,
+        phone: userPhone || '',
+        addedDate: new Date().toISOString()
+      };
+      
+      // Добавление пользователя в массив
+      usersData.push(newUser);
+      
+      // Сохранение в localStorage
+      saveUsersToStorage();
+      
+      // Обновление списка
+      updateUsersList();
+      
+      // Закрытие модального окна и сброс формы
+      document.getElementById('addUserModal').style.display = 'none';
+      document.getElementById('addUserForm').reset();
+      
+      alert('Пользователь успешно добавлен!');
+    });
+    
+    // Календарь
+    let currentDate = new Date();
+    let currentMonth = currentDate.getMonth();
+    let currentYear = currentDate.getFullYear();
+    let selectedDate = new Date(currentYear, currentMonth, currentDate.getDate());
+    
+    const monthNames = [
+      "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
+      "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
+    ];
+    
+    function renderCalendar() {
+      const monthYearElement = document.getElementById('currentMonth');
+      const calendarDaysElement = document.getElementById('calendarDays');
+      
+      // Установка заголовка
+      monthYearElement.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+      
+      // Очистка календаря
+      calendarDaysElement.innerHTML = '';
+      
+      // Первый день месяца
+      const firstDay = new Date(currentYear, currentMonth, 1);
+      // Последний день месяца
+      const lastDay = new Date(currentYear, currentMonth + 1, 0);
+      // День недели первого дня (0 - воскресенье, 1 - понедельник и т.д.)
+      const firstDayIndex = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+      // Последний день месяца
+      const lastDate = lastDay.getDate();
+      
+      // Добавляем дни предыдущего месяца
+      const prevMonthLastDay = new Date(currentYear, currentMonth, 0).getDate();
+      for (let i = firstDayIndex; i > 0; i--) {
+        const day = document.createElement('div');
+        day.className = 'calendar-day other-month';
+        day.textContent = prevMonthLastDay - i + 1;
+        calendarDaysElement.appendChild(day);
+      }
+      
+      // Добавляем дни текущего месяца
+      const today = new Date();
+      for (let i = 1; i <= lastDate; i++) {
+        const day = document.createElement('div');
+        day.className = 'calendar-day';
+        day.textContent = i;
+        day.dataset.date = `${currentYear}-${currentMonth + 1}-${i}`;
+        
+        // Проверяем, является ли день сегодняшним
+        if (i === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
+          day.classList.add('today');
+        }
+        
+        // Проверяем, выбран ли день
+        if (i === selectedDate.getDate() && currentMonth === selectedDate.getMonth() && currentYear === selectedDate.getFullYear()) {
+          day.classList.add('selected');
+        }
+        
+        day.addEventListener('click', function() {
+          // Снимаем выделение со всех дней
+          document.querySelectorAll('.calendar-day').forEach(d => {
+            d.classList.remove('selected');
+          });
+          
+          // Выделяем выбранный день
+          this.classList.add('selected');
+          
+          // Обновляем выбранную дату
+          selectedDate = new Date(currentYear, currentMonth, i);
+        });
+        
+        calendarDaysElement.appendChild(day);
+      }
+      
+      // Добавляем дни следующего месяца
+      const totalCells = 42; // 6 строк * 7 дней
+      const nextDays = totalCells - (firstDayIndex + lastDate);
+      for (let i = 1; i <= nextDays; i++) {
+        const day = document.createElement('div');
+        day.className = 'calendar-day other-month';
+        day.textContent = i;
+        calendarDaysElement.appendChild(day);
+      }
+    }
+    
+    // Навигация по месяцам
+    document.getElementById('prevMonth').addEventListener('click', function() {
+      currentMonth--;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      }
+      renderCalendar();
+    });
+    
+    document.getElementById('nextMonth').addEventListener('click', function() {
+      currentMonth++;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      }
+      renderCalendar();
+    });
+    
+    // Обработка кнопки "Отправить сейчас"
+    document.getElementById('sendNowBtn').addEventListener('click', function() {
+      if (selectedUsers.length === 0 && usersData.length === 0) {
+        alert('Добавьте пользователей для отправки рассылки!');
+        return;
+      }
+      
+      const recipients = selectedUsers.length > 0 ? selectedUsers.length : usersData.length;
+      alert(`Рассылка отправлена ${recipients} пользователям!`);
+    });
+    
+    // Функция обновления демо-превью
+    function updateDemoPreview() {
+      const demoMessageText = document.getElementById('demoMessageText');
+      const demoRecipientsCount = document.getElementById('demoRecipientsCount');
+      
+      // Обновляем текст сообщения
+      const messageText = document.getElementById('messageText').value;
+      demoMessageText.textContent = messageText;
+      
+      // Обновляем количество получателей
+      const recipientCount = selectedUsers.length > 0 ? selectedUsers.length : usersData.length;
+      demoRecipientsCount.textContent = `${recipientCount} пользователей`;
+    }
+    
+    // Обработка кнопки "Опубликовать рассылку"
+    document.getElementById('publishBtn').addEventListener('click', function() {
+      // Проверяем, есть ли пользователи
+      if (usersData.length === 0) {
+        alert('Добавьте пользователей перед публикацией рассылки!');
+        return;
+      }
+      
+      // Собираем все данные
+      const message = document.getElementById('messageText').value;
+      const link = document.getElementById('linkInput').value;
+      const file = document.getElementById('fileInput').value;
+      const time = document.getElementById('timeInput').value;
+      const date = selectedDate;
+      const recipientsCount = selectedUsers.length > 0 ? selectedUsers.length : usersData.length;
+      
+      // Показываем сводку
+      alert(`Рассылка запланирована!\n\n` +
+            `Сообщение: ${message.substring(0, 50)}...\n` +
+            `Получателей: ${recipientsCount}\n` +
+            `Дата отправки: ${date.toLocaleDateString('ru-RU')} ${time}\n` +
+            `Статус: Опубликована`);
+      
+      // В реальном приложении здесь будет отправка данных на сервер
+    });
+    
+    // Инициализация при загрузке страницы
+    document.addEventListener('DOMContentLoaded', function() {
+      // Загружаем пользователей из localStorage
+      loadUsersFromStorage();
+      
+      // Инициализируем список пользователей
+      updateUsersList();
+      
+      // Инициализируем календарь
+      renderCalendar();
+      
+      // Добавляем обработчик изменения времени
+      document.getElementById('timeInput').addEventListener('change', function() {
+        console.log('Время отправки установлено:', this.value);
+      });
+      
+      // Добавляем обработчик изменения текста сообщения для обновления демо
+      document.getElementById('messageText').addEventListener('input', function() {
+        // Если мы на шаге 4, обновляем демо
+        const currentStep = document.querySelector('.step.active').getAttribute('data-step');
+        if (currentStep === '4') {
+          updateDemoPreview();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
