@@ -1,16 +1,16 @@
 # main.py
 
 import threading
-from db import init_db
-from logging_config import setup_logging
-from webapp import create_app
-from bot_logic import init_bot
-from scheduler import setup_schedule, schedule_loop
+from .db import init_db
+from .logging_config import setup_logging
+from .webapp import create_app
+from .bot_logic import init_bot
+from .scheduler import setup_schedule, schedule_loop
 
 
 def run_web():
     app = create_app()
-    from config import WEB_HOST, WEB_PORT
+    from .config import WEB_HOST, WEB_PORT
 
     app.run(host=WEB_HOST, port=WEB_PORT, debug=False)
 
