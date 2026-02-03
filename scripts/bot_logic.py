@@ -80,11 +80,11 @@ def check_and_send_messages(bot: Bot):
 
 # ========== инициализация бота и handler'ов ==========
 
-def on_message(bot_obj: Bot, event):
+def on_message(bot: Bot, event):
     """Простой обработчик /ping."""
     text = (getattr(event, "text", "") or "").strip().lower()
     if text == "/ping":
-        bot_obj.send_text(chat_id=event.from_chat, text="Бот активен!")
+        bot.send_text(chat_id=event.from_chat, text="Бот активен!")
 
 
 def init_bot() -> Bot:

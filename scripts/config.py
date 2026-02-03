@@ -23,7 +23,7 @@ WEB_HOST = os.getenv("WEB_HOST", "0.0.0.0")
 WEB_PORT = int(os.getenv("WEB_PORT", 8000))
 
 DEFAULT_CHAT_IDS = [
-    "n.lyzunenko@test-123645965336.bizml.ru",
+    "last_dear@botdomain.bizml.ru",
     "AoLJrsA6x1EdRf3xNm4",
 ]
 
