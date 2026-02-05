@@ -105,6 +105,66 @@ def _build_vk_authorize_url(state: str, code_challenge: str) -> str:
     return f"https://id.vk.ru/authorize?{query}"
 
 
+def _extract_vk_user(user_info: dict) -> dict | None:
+    """Поддержка форматов ответов от VK ID и VK API."""
+    if not isinstance(user_info, dict):
+        return None
+
+    if isinstance(user_info.get("response"), list) and user_info["response"]:
+        return user_info["response"][0]
+
+    if isinstance(user_info.get("response"), dict):
+        response = user_info["response"]
+        if isinstance(response.get("user"), dict):
+            return response["user"]
+
+    if isinstance(user_info.get("user"), dict):
+        return user_info["user"]
+
+    return None
+
+
+def _load_vk_user(access_token: str) -> dict | None:
+    # 1) Старый способ через VK API (может быть недоступен для токена VK ID)
+    user_info_resp = requests.get(
+        "https://api.vk.com/method/users.get",
+        params={
+            "access_token": access_token,
+            "v": "5.241",
+            "fields": "first_name,last_name,bdate,email",
+        },
+        timeout=10,
+    )
+
+    if user_info_resp.status_code == 200:
+        user_info = user_info_resp.json()
+        if "error" not in user_info:
+            vk_user = _extract_vk_user(user_info)
+            if vk_user:
+                return vk_user
+        logger.warning("VK API users.get failed: %s", user_info)
+    else:
+        logger.warning("VK API users.get HTTP %s: %s", user_info_resp.status_code, user_info_resp.text)
+
+    # 2) Новый способ для VK ID OAuth
+    vk_id_resp = requests.post(
+        "https://id.vk.ru/oauth2/user_info",
+        headers={"Authorization": f"Bearer {access_token}"},
+        data={"client_id": VK_CLIENT_ID},
+        timeout=10,
+    )
+
+    if vk_id_resp.status_code != 200:
+        logger.error("VK ID user_info HTTP %s: %s", vk_id_resp.status_code, vk_id_resp.text)
+        return None
+
+    vk_id_info = vk_id_resp.json()
+    vk_user = _extract_vk_user(vk_id_info)
+    if not vk_user:
+        logger.error("VK ID user_info unexpected payload: %s", vk_id_info)
+    return vk_user
+
+
 def _get_current_user() -> dict | None:
     if not AUTH_ENABLED:
         return {"vk_id": "local", "name": "локальный режим"}
@@ -207,32 +267,21 @@ def create_app() -> Flask:
         if not access_token:
             return "Ошибка: access_token отсутствует", 400
 
-        user_info_resp = requests.get(
-            "https://api.vk.com/method/users.get",
-            params={
-                "access_token": access_token,
-                "v": "5.241",
-                "fields": "first_name,last_name,bdate,email",
-            },
-            timeout=10,
-        )
+        vk_user = _load_vk_user(access_token)
+        if not vk_user:
+            return "Ошибка получения данных пользователя из VK ID", 500
 
-        if user_info_resp.status_code != 200:
-            logger.error("VK API Error: %s", user_info_resp.text)
-            return "Ошибка получения данных пользователя", 500
+        vk_user_id = str(vk_user.get("id") or vk_user.get("user_id") or "")
+        if not vk_user_id:
+            logger.error("VK user payload without id: %s", vk_user)
+            return "Ошибка: не удалось определить ID пользователя", 500
 
-        user_info = user_info_resp.json()
-        if "error" in user_info:
-            logger.error("VK API Error: %s", user_info["error"])
-            return "Ошибка VK API", 500
-
-        vk_user = user_info["response"][0]
-        if str(vk_user["id"]) not in ALLOWED_VK_IDS:
+        if vk_user_id not in ALLOWED_VK_IDS:
             session.clear()
             return "Доступ запрещен", 403
         full_name = " ".join(part for part in [vk_user.get("first_name"), vk_user.get("last_name")] if part)
         session["user"] = {
-            "vk_id": str(vk_user["id"]),
+            "vk_id": vk_user_id,
             "name": full_name or "пользователь",
         }
 
