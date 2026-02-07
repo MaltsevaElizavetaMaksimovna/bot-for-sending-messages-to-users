@@ -1,0 +1,722 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>VK Teams — Личный кабинет</title>
+
+    <!-- VK Sans Font -->
+    <style>
+      @font-face {
+        font-family: 'VK Sans';
+        src: url('https://vk.com/fonts/VKSans-Regular.woff2') format('woff2');
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+      }
+
+      @font-face {
+        font-family: 'VK Sans';
+        src: url('https://vk.com/fonts/VKSans-Medium.woff2') format('woff2');
+        font-weight: 500;
+        font-style: normal;
+        font-display: swap;
+      }
+
+      @font-face {
+        font-family: 'VK Sans';
+        src: url('https://vk.com/fonts/VKSans-DemiBold.woff2') format('woff2');
+        font-weight: 600;
+        font-style: normal;
+        font-display: swap;
+      }
+
+      @font-face {
+        font-family: 'VK Sans';
+        src: url('https://vk.com/fonts/VKSans-Bold.woff2') format('woff2');
+        font-weight: 700;
+        font-style: normal;
+        font-display: swap;
+      }
+
+      @font-face {
+        font-family: 'VK Sans';
+        src: url('https://vk.com/fonts/VKSans-Bold.woff2') format('woff2');
+        font-weight: 800;
+        font-style: normal;
+        font-display: swap;
+      }
+    </style>
+
+    <style>
+      :root {
+        /* VK brand palette (guidelines) */
+        --vk-blue: #0077ff;
+        --vk-light-blue: #00eaff;
+        --vk-green: #17d685;
+        --vk-purple: #8024c0;
+        --vk-magenta: #ff3985;
+
+        --vk-white: #ffffff;
+        --vk-grey: #dedede;
+        --vk-warm-grey: #beb6ae;
+        --vk-black: #212121;
+
+        /* UI neutrals */
+        --bg: #f6f7f9;
+        --surface: #ffffff;
+        --surface-2: #fbfbfc;
+        --stroke: rgba(33, 33, 33, 0.12);
+        --stroke-2: rgba(33, 33, 33, 0.18);
+
+        --text: rgba(33, 33, 33, 0.92);
+        --muted: rgba(33, 33, 33, 0.64);
+        --faint: rgba(33, 33, 33, 0.48);
+
+        --shadow: 0 18px 50px rgba(33, 33, 33, 0.12);
+        --shadow-soft: 0 8px 24px rgba(33, 33, 33, 0.08);
+
+        --radius-xl: 22px;
+        --radius-lg: 16px;
+        --radius-md: 12px;
+        --radius-sm: 10px;
+
+        --container: 1120px;
+
+        --font: 'VK Sans', system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--text);
+        background: radial-gradient(
+            900px 520px at 18% -5%,
+            rgba(0, 234, 255, 0.16),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 520px at 85% 5%,
+            rgba(0, 119, 255, 0.16),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 520px at 60% 100%,
+            rgba(23, 214, 133, 0.12),
+            transparent 60%
+          ),
+          linear-gradient(180deg, #f6f7f9 0%, #f4f6fb 40%, #f6f7f9 100%);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .container {
+        width: min(var(--container), calc(100% - 32px));
+        margin: 0 auto;
+      }
+
+      /* Header */
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: rgba(255, 255, 255, 0.78);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--stroke);
+      }
+      .topbar__inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 12px 0;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 260px;
+      }
+      .mark {
+        width: 40px;
+        height: 40px;
+        border-radius: 14px;
+        background: radial-gradient(
+            18px 18px at 28% 30%,
+            rgba(0, 234, 255, 0.95),
+            transparent 60%
+          ),
+          radial-gradient(
+            22px 22px at 72% 65%,
+            rgba(0, 119, 255, 0.95),
+            transparent 60%
+          ),
+          linear-gradient(180deg, rgba(0, 119, 255, 0.1), rgba(0, 119, 255, 0));
+        border: 1px solid rgba(0, 119, 255, 0.22);
+        box-shadow: var(--shadow-soft);
+      }
+      .brand__txt {
+        line-height: 1.1;
+      }
+      .brand__title {
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+
+      .nav {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+      }
+      .nav a {
+        font-size: 13px;
+        color: var(--muted);
+        padding: 9px 12px;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        transition: 0.15s ease;
+        cursor: pointer;
+      }
+      .nav a:hover {
+        background: rgba(0, 119, 255, 0.06);
+        color: rgba(33, 33, 33, 0.88);
+        border-color: rgba(0, 119, 255, 0.18);
+      }
+      .nav a.is-active {
+        background: linear-gradient(
+          180deg,
+          rgba(0, 119, 255, 0.14),
+          rgba(0, 119, 255, 0.06)
+        );
+        border-color: rgba(0, 119, 255, 0.24);
+        color: rgba(33, 33, 33, 0.92);
+      }
+
+      .top-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 10px;
+        min-width: 260px;
+      }
+      .search {
+        position: relative;
+        width: min(320px, 40vw);
+      }
+      .search input {
+        width: 100%;
+        padding: 10px 12px 10px 36px;
+        border-radius: 999px;
+        border: 1px solid var(--stroke);
+        background: rgba(255, 255, 255, 0.9);
+        outline: none;
+        font-size: 13px;
+        color: rgba(33, 33, 33, 0.9);
+      }
+      .search input::placeholder {
+        color: rgba(33, 33, 33, 0.45);
+      }
+      .search .icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba(33, 33, 33, 0.45);
+        font-size: 14px;
+        user-select: none;
+      }
+      .avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 999px;
+        border: 1px solid var(--stroke);
+        background: radial-gradient(
+            circle at 35% 30%,
+            rgba(255, 255, 255, 0.8),
+            rgba(255, 255, 255, 0.2)
+          ),
+          linear-gradient(
+            135deg,
+            rgba(0, 119, 255, 0.35),
+            rgba(23, 214, 133, 0.28)
+          );
+        box-shadow: var(--shadow-soft);
+        cursor: pointer;
+      }
+
+      /* Page layout */
+      main.page {
+        padding: 18px 0 40px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+        align-items: start;
+      }
+
+      /* Buttons */
+      .btn {
+        border: 1px solid var(--stroke);
+        background: rgba(255, 255, 255, 0.9);
+        color: rgba(33, 33, 33, 0.88);
+        padding: 10px 12px;
+        border-radius: 14px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        user-select: none;
+        transition: 0.15s ease;
+        border: none;
+      }
+      .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-soft);
+        border-color: rgba(0, 119, 255, 0.22);
+      }
+      .btn--primary {
+        border-color: rgba(0, 119, 255, 0.32);
+        background: linear-gradient(
+          180deg,
+          rgba(0, 119, 255, 0.18),
+          rgba(0, 119, 255, 0.08)
+        );
+      }
+      .btn--ghost {
+        background: transparent;
+      }
+      .btn--danger {
+        border-color: rgba(255, 57, 133, 0.32);
+        background: linear-gradient(
+          180deg,
+          rgba(255, 57, 133, 0.1),
+          rgba(255, 57, 133, 0.05)
+        );
+        color: var(--vk-magenta);
+      }
+
+      /* Main column */
+      .main {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .headline {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .headline h1 {
+        margin: 0;
+        font-size: 22px;
+        letter-spacing: -0.03em;
+      }
+      .headline p {
+        margin: 8px 0 0;
+        max-width: 72ch;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.55;
+      }
+
+      /* Profile card */
+      .profile-card {
+  position: relative; /* ← ДОБАВИТЬ */
+  border-radius: var(--radius-xl);
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid var(--stroke);
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+}
+
+      .profile-header {
+        padding: 24px;
+        background: linear-gradient(
+          180deg,
+          rgba(0, 119, 255, 0.1),
+          rgba(255, 255, 255, 1)
+        );
+        border-bottom: 1px solid var(--stroke);
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .profile-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 20px;
+        border: 1px solid var(--stroke);
+        background: radial-gradient(
+            circle at 35% 30%,
+            rgba(255, 255, 255, 0.8),
+            rgba(255, 255, 255, 0.2)
+          ),
+          linear-gradient(
+            135deg,
+            rgba(0, 119, 255, 0.35),
+            rgba(23, 214, 133, 0.28)
+          );
+        box-shadow: var(--shadow-soft);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        color: white;
+      }
+
+      .profile-info h2 {
+        margin: 0 0 8px;
+        font-size: 20px;
+        letter-spacing: -0.02em;
+      }
+
+      .profile-info p {
+        margin: 0 0 4px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .profile-badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: rgba(0, 119, 255, 0.1);
+        color: var(--vk-blue);
+        font-size: 11px;
+        font-weight: 700;
+        margin-top: 8px;
+      }
+
+      .profile-content {
+        padding: 24px;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+
+      .profile-section {
+        margin-bottom: 24px;
+      }
+
+      .profile-section h3 {
+        margin: 0 0 16px;
+        font-size: 14px;
+        letter-spacing: -0.02em;
+        color: rgba(33, 33, 33, 0.9);
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .info-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px;
+        border-radius: 12px;
+        background: rgba(33, 33, 33, 0.03);
+        border: 1px solid rgba(33, 33, 33, 0.08);
+      }
+
+      .info-label {
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .info-value {
+        font-size: 13px;
+        font-weight: 600;
+        color: rgba(33, 33, 33, 0.9);
+      }
+
+      .danger-zone {
+        margin-top: 32px;
+        padding-top: 24px;
+        border-top: 1px solid rgba(255, 57, 133, 0.2);
+      }
+      .danger-zone {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+
+      .danger-zone h3 {
+        color: var(--vk-magenta);
+      }
+
+      .danger-note {
+        font-size: 13px;
+        color: var(--muted);
+        margin-bottom: 16px;
+        line-height: 1.6;
+      }
+
+      /* Notification */
+      .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 12px 16px;
+        border-radius: var(--radius-md);
+        background: var(--vk-green);
+        color: white;
+        font-size: 14px;
+        z-index: 1000;
+        transform: translateX(120%);
+        transition: transform 0.3s ease;
+        box-shadow: var(--shadow);
+      }
+
+      .notification.show {
+        transform: translateX(0);
+      }
+
+      /* Responsive */
+      @media (max-width: 980px) {
+        .profile-content {
+          grid-template-columns: 1fr;
+        }
+        .top-actions {
+          min-width: unset;
+        }
+        .search {
+          display: none;
+        }
+        .nav {
+          justify-content: flex-start;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .profile-header {
+          flex-direction: column;
+          text-align: center;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <header class="topbar">
+      <div class="container topbar__inner">
+      <div class="brand">
+      <img src="logo.png" style="width: 150px; height: 40px; border-radius: 14px; border: 1px solid var(--stroke);">
+      <div class="brand__txt">
+        </div>
+
+        <nav class="nav" aria-label="Навигация">
+          <a href="index.html">Рассылка</a>
+          <a href="analytics.html">Аналитика</a>
+          <a class="is-active" href="profile.html">Личный кабинет</a>
+        </nav>
+
+        <div class="top-actions">
+          <div class="search">
+            <span class="icon">⌕</span>
+            <input type="search" placeholder="Поиск" id="searchInput" />
+          </div>
+          <div class="avatar" aria-label="Профиль" onclick="window.location.href='profile.html'"></div>
+        </div>
+      </div>
+    </header>
+
+    <main class="page">
+      <div class="container">
+        <div class="grid">
+          <section class="main">
+            <div class="headline">
+              <div>
+                <h1>Личный кабинет</h1>
+                <p>
+                  Управление профилем и настройки аккаунта
+                </p>
+              </div>
+            </div>
+
+            <div class="profile-card">
+              <div class="profile-header">
+                <div class="profile-avatar" id="userAvatar">👤</div>
+                <div class="profile-info">
+                  <h2 id="userName">Загрузка...</h2>
+                  <p id="userEmail">email@example.com</p>
+                  <p id="userRole">Роль: Пользователь</p>
+                  <div class="profile-badge" id="demoBadge" style="display: none;">Демо-режим</div>
+                </div>
+              </div>
+
+              <div class="profile-content">
+                <div>
+                  <div class="profile-section">
+                    
+                  </div>
+
+                  <div class="danger-zone">
+  <div>
+    <button class="btn btn--danger" onclick="logout()">
+      Выйти из аккаунта
+    </button>
+  </div>
+</div>
+
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer__grid">
+        <div>
+          <h4>VK Teams</h4>
+          <p>
+            Сервис для рассылок и аналитики вовлечённости.
+          </p>
+        </div>
+
+        <div>
+          <h4>Карта сайта</h4>
+          <p><a href="index.html">Рассылка</a></p>
+          <p><a href="analytics.html">Аналитика</a></p>
+          <p><a href="profile.html">Личный кабинет</a></p>
+        </div>
+
+        <div>
+          <h4>Поддержка</h4>
+          <p><a href="#" onclick="showSupport()">Написать в поддержку</a></p>
+          <p><a href="#" onclick="showDocumentation()">Документация</a></p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Загружаем данные пользователя
+      document.addEventListener('DOMContentLoaded', function() {
+        // Проверяем авторизацию
+        const isAuthenticated = localStorage.getItem('vk_teams_auth');
+        
+        if (isAuthenticated !== 'true') {
+          // Если не авторизован, перенаправляем на страницу авторизации
+          window.location.href = 'auth.html';
+          return;
+        }
+
+        // Загружаем данные пользователя
+        loadUserData();
+      });
+
+      function loadUserData() {
+        const userData = JSON.parse(localStorage.getItem('vk_teams_user') || '{}');
+        const isDemo = localStorage.getItem('vk_teams_demo') === 'true';
+        
+        // Заполняем данные пользователя
+        document.getElementById('userName').textContent = userData.name || 'Пользователь';
+        document.getElementById('userEmail').textContent = userData.email || 'Не указан';
+        document.getElementById('userAvatar').textContent = userData.avatar || '👤';
+        document.getElementById('userId').textContent = userData.id || 'Неизвестно';
+        
+        // Показываем бейдж демо-режима
+        if (isDemo) {
+          document.getElementById('demoBadge').style.display = 'inline-block';
+          document.getElementById('userRole').textContent = 'Роль: Демо-пользователь';
+        } else {
+          document.getElementById('userRole').textContent = 'Роль: Пользователь';
+        }
+        
+        // Устанавливаем даты
+        const now = new Date();
+        const regDate = new Date(now);
+        regDate.setDate(regDate.getDate() - 30); // 30 дней назад
+        
+        document.getElementById('regDate').textContent = regDate.toLocaleDateString('ru-RU');
+        document.getElementById('lastLogin').textContent = now.toLocaleDateString('ru-RU') + ' ' + now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+      }
+
+      function logout() {
+        if (confirm('Вы уверены, что хотите выйти из аккаунта?')) {
+          // Очищаем данные авторизации
+          localStorage.removeItem('vk_teams_auth');
+          localStorage.removeItem('vk_teams_demo');
+          
+          showNotification('Вы вышли из аккаунта', 'success');
+          
+          // Перенаправляем на страницу авторизации
+          setTimeout(() => {
+            window.location.href = 'auth.html';
+          }, 1000);
+        }
+      }
+
+      function showSupport() {
+        showNotification('Открыта форма поддержки', 'info');
+      }
+
+      function showDocumentation() {
+        showNotification('Открыта документация', 'info');
+      }
+
+      function showNotification(message, type = 'info') {
+        const notification = document.getElementById('notification');
+        notification.textContent = message;
+        
+        // Цвета для разных типов уведомлений
+        const colors = {
+          'success': 'var(--vk-green)',
+          'warning': '#ffb238',
+          'error': 'var(--vk-magenta)',
+          'info': 'var(--vk-blue)'
+        };
+        
+        notification.style.background = colors[type] || colors.info;
+        notification.classList.add('show');
+        
+        setTimeout(() => {
+          notification.classList.remove('show');
+        }, 3000);
+      }
+
+      // Поиск
+      document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          const query = this.value.trim();
+          if (query) {
+            showNotification(`Поиск: ${query}`, 'info');
+          }
+        }
+      });
+    </script>
+  </body>
+</html>

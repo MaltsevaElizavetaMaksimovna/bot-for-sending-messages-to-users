@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>VK Teams — Аналитика</title>
+
+    <!-- VK Sans Font -->
+    <style>
+      @font-face {
+        font-family: 'VK Sans';
+        src: url('https://vk.com/fonts/VKSans-Regular.woff2') format('woff2');
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+      }
+
+      @font-face {
+        font-family: 'VK Sans';
+        src: url('https://vk.com/fonts/VKSans-Medium.woff2') format('woff2');
+        font-weight: 500;
+        font-style: normal;
+        font-display: swap;
+      }
+
+      @font-face {
+        font-family: 'VK Sans';
+        src: url('https://vk.com/fonts/VKSans-DemiBold.woff2') format('woff2');
+        font-weight: 600;
+        font-style: normal;
+        font-display: swap;
+      }
+
+      @font-face {
+        font-family: 'VK Sans';
+        src: url('https://vk.com/fonts/VKSans-Bold.woff2') format('woff2');
+        font-weight: 700;
+        font-style: normal;
+        font-display: swap;
+      }
+
+      @font-face {
+        font-family: 'VK Sans';
+        src: url('https://vk.com/fonts/VKSans-Bold.woff2') format('woff2');
+        font-weight: 800;
+        font-style: normal;
+        font-display: swap;
+      }
+    </style>
+
+    <style>
+      :root {
+        /* VK brand palette (guidelines) */
+        --vk-blue: #0077ff;
+        --vk-light-blue: #00eaff;
+        --vk-green: #17d685;
+        --vk-purple: #8024c0;
+        --vk-magenta: #ff3985;
+
+        --vk-white: #ffffff;
+        --vk-grey: #dedede;
+        --vk-warm-grey: #beb6ae;
+        --vk-black: #212121;
+
+        /* UI neutrals */
+        --bg: #f6f7f9;
+        --surface: #ffffff;
+        --surface-2: #fbfbfc;
+        --stroke: rgba(33, 33, 33, 0.12);
+        --stroke-2: rgba(33, 33, 33, 0.18);
+
+        --text: rgba(33, 33, 33, 0.92);
+        --muted: rgba(33, 33, 33, 0.64);
+        --faint: rgba(33, 33, 33, 0.48);
+
+        --shadow: 0 18px 50px rgba(33, 33, 33, 0.12);
+        --shadow-soft: 0 8px 24px rgba(33, 33, 33, 0.08);
+
+        --radius-xl: 22px;
+        --radius-lg: 16px;
+        --radius-md: 12px;
+        --radius-sm: 10px;
+
+        --container: 1120px;
+
+        --font: 'VK Sans', system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--text);
+        background: radial-gradient(
+            900px 520px at 18% -5%,
+            rgba(0, 234, 255, 0.16),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 520px at 85% 5%,
+            rgba(0, 119, 255, 0.16),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 520px at 60% 100%,
+            rgba(23, 214, 133, 0.12),
+            transparent 60%
+          ),
+          linear-gradient(180deg, #f6f7f9 0%, #f4f6fb 40%, #f6f7f9 100%);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .container {
+        width: min(var(--container), calc(100% - 32px));
+        margin: 0 auto;
+      }
+
+      /* Header */
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: rgba(255, 255, 255, 0.78);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--stroke);
+      }
+      .topbar__inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 12px 0;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 260px;
+      }
+      .mark {
+        width: 40px;
+        height: 40px;
+        border-radius: 14px;
+        background: radial-gradient(
+            18px 18px at 28% 30%,
+            rgba(0, 234, 255, 0.95),
+            transparent 60%
+          ),
+          radial-gradient(
+            22px 22px at 72% 65%,
+            rgba(0, 119, 255, 0.95),
+            transparent 60%
+          ),
+          linear-gradient(180deg, rgba(0, 119, 255, 0.1), rgba(0, 119, 255, 0));
+        border: 1px solid rgba(0, 119, 255, 0.22);
+        box-shadow: var(--shadow-soft);
+      }
+      .brand__txt {
+        line-height: 1.1;
+      }
+      .brand__title {
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+
+      .nav {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+      }
+      .nav a {
+        font-size: 13px;
+        color: var(--muted);
+        padding: 9px 12px;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        transition: 0.15s ease;
+        cursor: pointer;
+      }
+      .nav a:hover {
+        background: rgba(0, 119, 255, 0.06);
+        color: rgba(33, 33, 33, 0.88);
+        border-color: rgba(0, 119, 255, 0.18);
+      }
+      .nav a.is-active {
+        background: linear-gradient(
+          180deg,
+          rgba(0, 119, 255, 0.14),
+          rgba(0, 119, 255, 0.06)
+        );
+        border-color: rgba(0, 119, 255, 0.24);
+        color: rgba(33, 33, 33, 0.92);
+      }
+
+      .top-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 10px;
+        min-width: 260px;
+      }
+      .search {
+        position: relative;
+        width: min(320px, 40vw);
+      }
+      .search input {
+        width: 100%;
+        padding: 10px 12px 10px 36px;
+        border-radius: 999px;
+        border: 1px solid var(--stroke);
+        background: rgba(255, 255, 255, 0.9);
+        outline: none;
+        font-size: 13px;
+        color: rgba(33, 33, 33, 0.9);
+      }
+      .search input::placeholder {
+        color: rgba(33, 33, 33, 0.45);
+      }
+      .search .icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba(33, 33, 33, 0.45);
+        font-size: 14px;
+        user-select: none;
+      }
+      .avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 999px;
+        border: 1px solid var(--stroke);
+        background: radial-gradient(
+            circle at 35% 30%,
+            rgba(255, 255, 255, 0.8),
+            rgba(255, 255, 255, 0.2)
+          ),
+          linear-gradient(
+            135deg,
+            rgba(0, 119, 255, 0.35),
+            rgba(23, 214, 133, 0.28)
+          );
+        box-shadow: var(--shadow-soft);
+        cursor: pointer;
+      }
+
+      /* Page layout */
+      main.page {
+        padding: 18px 0 40px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+        align-items: start;
+      }
+
+      /* Buttons */
+      .btn {
+        border: 1px solid var(--stroke);
+        background: rgba(255, 255, 255, 0.9);
+        color: rgba(33, 33, 33, 0.88);
+        padding: 10px 12px;
+        border-radius: 14px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        user-select: none;
+        transition: 0.15s ease;
+        border: none;
+      }
+      .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-soft);
+        border-color: rgba(0, 119, 255, 0.22);
+      }
+      .btn--primary {
+        border-color: rgba(0, 119, 255, 0.32);
+        background: linear-gradient(
+          180deg,
+          rgba(0, 119, 255, 0.18),
+          rgba(0, 119, 255, 0.08)
+        );
+      }
+      .btn--ghost {
+        background: transparent;
+      }
+
+      /* Main column */
+      .main {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .headline {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .headline h1 {
+        margin: 0;
+        font-size: 22px;
+        letter-spacing: -0.03em;
+      }
+      .headline p {
+        margin: 8px 0 0;
+        max-width: 72ch;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.55;
+      }
+
+      /* Filters section */
+      .filters {
+        border-radius: var(--radius-lg);
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--stroke);
+        box-shadow: var(--shadow-soft);
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+
+      .filters__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+      }
+
+      .filters__header h2 {
+        margin: 0;
+        font-size: 14px;
+        letter-spacing: -0.02em;
+      }
+
+      .filters__grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 12px;
+      }
+
+      .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .filter-group label {
+        font-size: 12px;
+        color: var(--muted);
+        font-weight: 600;
+      }
+
+      .filter-input {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid var(--stroke);
+        background: rgba(255, 255, 255, 0.95);
+        font-size: 13px;
+        font-family: var(--font);
+        outline: none;
+        transition: all 0.2s ease;
+      }
+
+      .filter-input:focus {
+        border-color: var(--vk-blue);
+        box-shadow: 0 0 0 3px rgba(0, 119, 255, 0.1);
+      }
+
+      .filter-select {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid var(--stroke);
+        background: rgba(255, 255, 255, 0.95);
+        font-size: 13px;
+        font-family: var(--font);
+        outline: none;
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        background-size: 16px;
+        padding-right: 36px;
+      }
+
+      .filter-select:focus {
+        border-color: var(--vk-blue);
+        box-shadow: 0 0 0 3px rgba(0, 119, 255, 0.1);
+      }
+
+      .filters__actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 16px;
+        justify-content: flex-end;
+      }
+
+      /* Stats cards */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      .stat-card {
+        border-radius: var(--radius-lg);
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--stroke);
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        transition: all 0.2s ease;
+      }
+
+      .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-soft);
+        border-color: rgba(0, 119, 255, 0.22);
+      }
+
+      .stat-value {
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--vk-blue);
+        margin-bottom: 4px;
+      }
+
+      .stat-label {
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .stat-change {
+        font-size: 11px;
+        margin-top: 4px;
+        padding: 2px 6px;
+        border-radius: 999px;
+        background: rgba(23, 214, 133, 0.1);
+        color: var(--vk-green);
+      }
+
+      .stat-change.negative {
+        background: rgba(255, 57, 133, 0.1);
+        color: var(--vk-magenta);
+      }
+
+      /* Таблица рассылок */
+      .mailings-section {
+        border-radius: var(--radius-xl);
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--stroke);
+        box-shadow: var(--shadow-soft);
+        overflow: hidden;
+        margin-top: 16px;
+      }
+
+      .mailings-section__head {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--stroke);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        background: linear-gradient(
+          180deg,
+          rgba(0, 119, 255, 0.08),
+          rgba(255, 255, 255, 1)
+        );
+      }
+
+      .mailings-section__head h2 {
+        margin: 0;
+        font-size: 14px;
+        letter-spacing: -0.02em;
+      }
+
+      .mailings-section__body {
+        padding: 16px;
+        overflow-x: auto;
+      }
+
+      .mailings-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 800px;
+      }
+
+      .mailings-table thead {
+        background: rgba(246, 247, 249, 0.8);
+        border-bottom: 2px solid var(--stroke);
+      }
+
+      .mailings-table th {
+        padding: 12px 16px;
+        text-align: left;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .mailings-table tbody tr {
+        border-bottom: 1px solid var(--stroke);
+        transition: background-color 0.2s ease;
+      }
+
+      .mailings-table tbody tr:hover {
+        background: rgba(0, 119, 255, 0.04);
+      }
+
+      .mailings-table td {
+        padding: 16px;
+        font-size: 13px;
+        vertical-align: top;
+      }
+
+      .mailing-text {
+        max-width: 300px;
+        color: var(--text);
+        line-height: 1.5;
+      }
+
+      .mailing-text-truncated {
+        display: -webkit-box;
+        display: -moz-box;
+        display: box;
+        -webkit-line-clamp: 2;
+        -moz-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+        -moz-box-orient: vertical;
+        box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .click-stats {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .click-absolute {
+        font-weight: 600;
+        color: var(--vk-blue);
+      }
+
+      .click-percentage {
+        font-size: 12px;
+        color: var(--vk-green);
+        font-weight: 500;
+      }
+
+      .click-percentage.negative {
+        color: var(--vk-magenta);
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+
+      .status-sent {
+        background: rgba(23, 214, 133, 0.1);
+        color: var(--vk-green);
+      }
+
+      .status-pending {
+        background: rgba(255, 184, 0, 0.1);
+        color: #ffb800;
+      }
+
+      .status-failed {
+        background: rgba(255, 57, 133, 0.1);
+        color: var(--vk-magenta);
+      }
+
+      .table-actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .table-btn {
+        padding: 6px 10px;
+        border-radius: 8px;
+        border: 1px solid var(--stroke);
+        background: rgba(255, 255, 255, 0.9);
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .table-btn:hover {
+        background: rgba(0, 119, 255, 0.06);
+        border-color: rgba(0, 119, 255, 0.22);
+      }
+
+      /* Footer */
+      footer.footer {
+        margin-top: 18px;
+        padding: 18px 0 26px;
+        border-top: 1px solid var(--stroke);
+        background: rgba(255, 255, 255, 0.55);
+      }
+
+      .footer__grid {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr 0.9fr;
+        gap: 16px;
+        align-items: start;
+      }
+
+      .footer h4 {
+        margin: 0 0 8px;
+        font-size: 13px;
+        letter-spacing: -0.02em;
+        color: rgba(33, 33, 33, 0.88);
+      }
+
+      .footer p,
+      .footer a {
+        margin: 0;
+        font-size: 12px;
+        line-height: 1.7;
+        color: var(--muted);
+        cursor: pointer;
+      }
+
+      .footer a:hover {
+        text-decoration: underline;
+      }
+
+      /* Responsive */
+      @media (max-width: 980px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+        .top-actions {
+          min-width: unset;
+        }
+        .search {
+          display: none;
+        }
+        .nav {
+          justify-content: flex-start;
+        }
+        .filters__grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="topbar">
+      <div class="container topbar__inner">
+      <div class="brand">
+      <img src="logo.png" style="width: 150px; height: 40px; border-radius: 14px; border: 1px solid var(--stroke);">
+      <div class="brand__txt">
+  </div>
+</div>
+
+        <nav class="nav" aria-label="Навигация">
+          <a href="index.html">Рассылка</a>
+          <a class="is-active" href="analytics.html">Аналитика</a>
+        </nav>
+
+        <div class="top-actions">
+          <div class="search">
+            <span class="icon">⌕</span>
+            <input type="search" placeholder="Поиск по аналитике" id="searchInput" />
+          </div>
+          <div class="avatar" aria-label="Профиль" onclick="showProfile()"></div>
+        </div>
+      </div>
+    </header>
+
+    <main class="page">
+      <div class="container">
+        <div class="grid">
+          <!-- Main -->
+          <section class="main">
+            <div class="headline">
+              <div>
+                <h1>Аналитика рассылок</h1>
+              </div>
+            </div>
+
+            <!-- Filters -->
+            <section class="filters" aria-label="Фильтры аналитики">
+              <div class="filters__header">
+                <h2>Фильтры аналитики</h2>
+                <button class="btn btn--ghost" type="button" onclick="resetFilters()">
+                  Сбросить все
+                </button>
+              </div>
+
+              <div class="filters__grid">
+                <div class="filter-group">
+                  <label for="dateFrom">Дата от</label>
+                  <input type="date" id="dateFrom" class="filter-input" onchange="updateAnalytics()">
+                </div>
+
+                <div class="filter-group">
+                  <label for="dateTo">Дата до</label>
+                  <input type="date" id="dateTo" class="filter-input" onchange="updateAnalytics()">
+                </div>
+
+                <div class="filter-group">
+                  <label for="segmentSelect">Сегмент пользователей</label>
+                  <select id="segmentSelect" class="filter-select" onchange="updateAnalytics()">
+                    <option value="all">Все сегменты</option>
+                    <option value="ru">RU (4,280)</option>
+                    <option value="pm">PM (520)</option>
+                    <option value="dev">Разработка (1,240)</option>
+                    <option value="marketing">Маркетинг (890)</option>
+                    <option value="sales">Продажи (640)</option>
+                  </select>
+                </div>
+
+                <div class="filter-group">
+                  <label for="linkSelect">Ссылка</label>
+                  <select id="linkSelect" class="filter-select" onchange="updateAnalytics()">
+                    <option value="all">Все ссылки</option>
+                    <option value="notes">https://vk…/notes?utm=teams</option>
+                    <option value="doc">https://vk…/doc?utm=teams</option>
+                    <option value="faq">https://vk…/faq?utm=teams</option>
+                    <option value="updates">https://vk…/updates?utm=teams</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="filters__actions">
+                <button class="btn btn--ghost" type="button" onclick="applyFilters()">
+                  Применить фильтры
+                </button>
+                <button class="btn btn--primary" type="button" onclick="updateAnalytics()">
+                  Обновить аналитику
+                </button>
+              </div>
+            </section>
+
+            <!-- Statistics cards -->
+            <div class="stats-grid" id="statsGrid">
+              <div class="stat-card">
+                <div class="stat-value" id="totalOpens">4,280</div>
+                <div class="stat-label">Всего открытий</div>
+                <div class="stat-change" id="opensChange">+12%</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="totalClicks">1,240</div>
+                <div class="stat-label">Всего кликов</div>
+                <div class="stat-change" id="clicksChange">+8%</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="totalConversions">320</div>
+                <div class="stat-label">Всего конверсий</div>
+                <div class="stat-change negative" id="conversionsChange">-3%</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="avgRate">28.9%</div>
+                <div class="stat-label">Средняя вовлечённость</div>
+                <div class="stat-change" id="rateChange">+5%</div>
+              </div>
+            </div>
+
+            <!-- Таблица рассылок -->
+            <section class="mailings-section" aria-label="Таблица рассылок">
+              <div class="mailings-section__head">
+                <h2>История рассылок</h2>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap">
+                  <button class="btn btn--primary" type="button" onclick="exportMailings()">Экспорт в CSV</button>
+                </div>
+              </div>
+
+              <div class="mailings-section__body">
+                <table class="mailings-table" id="mailingsTable">
+                  <thead>
+                    <tr>
+                      <th>№</th>
+                      <th>Дата отправления</th>
+                      <th>Текст сообщения</th>
+                      <th>Отправлено</th>
+                      <th>Переходы по ссылке</th>
+                      <th>Статус</th>
+                      <th>Действия</th>
+                    </tr>
+                  </thead>
+                  <tbody id="mailingsTableBody">
+                    <!-- Данные будут заполнены JavaScript -->
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer__grid">
+        <div>
+          <h4>VK Teams</h4>
+          <p>
+            Сервис для рассылок и аналитики вовлечённости.
+          </p>
+        </div>
+
+        <div>
+          <h4>Карта сайта</h4>
+          <p><a href="index.html">Рассылка</a></p>
+          <p><a href="analytics.html">Аналитика</a></p>
+        </div>
+
+        <div>
+          <h4>Поддержка</h4>
+          <p><a href="#" onclick="showSupport()">Написать в поддержку</a></p>
+          <p><a href="#" onclick="showDocumentation()">Документация</a></p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Текущие фильтры
+      let currentFilters = {
+        dateFrom: '',
+        dateTo: '',
+        segment: 'all',
+        link: 'all'
+      };
+      
+      // Статистика по умолчанию
+      let currentStats = {
+        totalOpens: 4280,
+        totalClicks: 1240,
+        totalConversions: 320,
+        avgRate: 28.9,
+        opensChange: 12,
+        clicksChange: 8,
+        conversionsChange: -3,
+        rateChange: 5
+      };
+
+      // Данные рассылок
+      let mailingsData = [
+        {
+          id: 1,
+          date: '2024-03-15',
+          text: 'Новое обновление VK Teams: добавлены расширенные аналитические отчеты и улучшена интеграция с CRM-системами. Проверьте новые возможности!',
+          sent: 1250,
+          clicks: 320,
+          status: 'sent'
+        },
+        {
+          id: 2,
+          date: '2024-03-14',
+          text: 'Приглашаем на вебинар "Эффективные рассылки в 2024 году". Узнайте, как увеличить конверсию на 30% с помощью наших инструментов.',
+          sent: 890,
+          clicks: 215,
+          status: 'sent'
+        },
+        {
+          id: 3,
+          date: '2024-03-13',
+          text: 'Важная информация об обновлении политики конфиденциальности. Пожалуйста, ознакомьтесь с изменениями до 20 марта.',
+          sent: 2450,
+          clicks: 540,
+          status: 'sent'
+        },
+        {
+          id: 4,
+          date: '2024-03-12',
+          text: 'Специальное предложение для первых 100 клиентов: 3 месяца бесплатного использования премиум-функций VK Teams.',
+          sent: 1560,
+          clicks: 420,
+          status: 'sent'
+        },
+        {
+          id: 5,
+          date: '2024-03-11',
+          text: 'Технические работы 12 марта с 03:00 до 05:00 МСК. Сервис может быть временно недоступен. Приносим извинения за неудобства.',
+          sent: 1820,
+          clicks: 310,
+          status: 'sent'
+        },
+        {
+          id: 6,
+          date: '2024-03-10',
+          text: 'Опрос: Какой новой функцией вы хотели бы видеть в VK Teams? Пройдите короткий опрос и помогите нам стать лучше!',
+          sent: 1100,
+          clicks: 280,
+          status: 'sent'
+        },
+        {
+          id: 7,
+          date: '2024-03-09',
+          text: 'Благодарим за участие в тестировании бета-версии! Ваши отзывы очень важны для нас. Оставляйте комментарии в специальном разделе.',
+          sent: 750,
+          clicks: 190,
+          status: 'sent'
+        },
+        {
+          id: 8,
+          date: '2024-03-08',
+          text: 'Новая интеграция с Google Analytics доступна для всех пользователей бизнес-тарифа. Настройте детальный трекинг эффективности рассылок.',
+          sent: 920,
+          clicks: 245,
+          status: 'pending'
+        },
+        {
+          id: 9,
+          date: '2024-03-07',
+          text: 'Плановое обновление системы безопасности завершено. Все данные защищены по стандарту ISO 27001.',
+          sent: 1350,
+          clicks: 0,
+          status: 'failed'
+        }
+      ];
+
+      // Инициализация
+      document.addEventListener('DOMContentLoaded', function() {
+        // Устанавливаем даты по умолчанию (последние 7 дней)
+        const today = new Date();
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        
+        document.getElementById('dateFrom').value = weekAgo.toISOString().split('T')[0];
+        document.getElementById('dateTo').value = today.toISOString().split('T')[0];
+        
+        currentFilters.dateFrom = weekAgo.toISOString().split('T')[0];
+        currentFilters.dateTo = today.toISOString().split('T')[0];
+        
+        updateStatsDisplay();
+        renderMailingsTable();
+      });
+
+      // Обновление аналитики на основе фильтров
+      function updateAnalytics() {
+        // Собираем текущие значения фильтров
+        currentFilters.dateFrom = document.getElementById('dateFrom').value;
+        currentFilters.dateTo = document.getElementById('dateTo').value;
+        currentFilters.segment = document.getElementById('segmentSelect').value;
+        currentFilters.link = document.getElementById('linkSelect').value;
+        
+        // Генерируем новые данные на основе фильтров
+        generateFilteredData();
+        
+        // Обновляем отображение
+        updateStatsDisplay();
+        
+        showNotification('Аналитика обновлена', 'success');
+      }
+
+      function generateFilteredData() {
+        let baseMultiplier = 1;
+        
+        // Множитель в зависимости от сегмента
+        switch(currentFilters.segment) {
+          case 'ru':
+            baseMultiplier = 1.2;
+            break;
+          case 'pm':
+            baseMultiplier = 0.8;
+            break;
+          case 'dev':
+            baseMultiplier = 1.5;
+            break;
+          case 'marketing':
+            baseMultiplier = 1.1;
+            break;
+          case 'sales':
+            baseMultiplier = 0.9;
+            break;
+        }
+        
+        // Множитель в зависимости от ссылки
+        if (currentFilters.link !== 'all') {
+          baseMultiplier *= 1.1;
+        }
+        
+        // Обновляем статистику на основе фильтров
+        currentStats.totalOpens = Math.round(4280 * baseMultiplier);
+        currentStats.totalClicks = Math.round(1240 * baseMultiplier);
+        currentStats.totalConversions = Math.round(320 * baseMultiplier);
+        currentStats.avgRate = (28.9 * baseMultiplier).toFixed(1);
+        
+        // Генерируем случайные изменения
+        currentStats.opensChange = Math.floor(Math.random() * 20) - 5;
+        currentStats.clicksChange = Math.floor(Math.random() * 20) - 5;
+        currentStats.conversionsChange = Math.floor(Math.random() * 20) - 10;
+        currentStats.rateChange = Math.floor(Math.random() * 10) - 2;
+      }
+
+      function updateStatsDisplay() {
+        document.getElementById('totalOpens').textContent = 
+          formatNumber(currentStats.totalOpens);
+        document.getElementById('totalClicks').textContent = 
+          formatNumber(currentStats.totalClicks);
+        document.getElementById('totalConversions').textContent = 
+          formatNumber(currentStats.totalConversions);
+        document.getElementById('avgRate').textContent = 
+          `${currentStats.avgRate}%`;
+        
+        // Обновляем изменения
+        const opensChange = document.getElementById('opensChange');
+        opensChange.textContent = `${currentStats.opensChange >= 0 ? '+' : ''}${currentStats.opensChange}%`;
+        opensChange.className = `stat-change ${currentStats.opensChange >= 0 ? '' : 'negative'}`;
+        
+        const clicksChange = document.getElementById('clicksChange');
+        clicksChange.textContent = `${currentStats.clicksChange >= 0 ? '+' : ''}${currentStats.clicksChange}%`;
+        clicksChange.className = `stat-change ${currentStats.clicksChange >= 0 ? '' : 'negative'}`;
+        
+        const conversionsChange = document.getElementById('conversionsChange');
+        conversionsChange.textContent = `${currentStats.conversionsChange >= 0 ? '+' : ''}${currentStats.conversionsChange}%`;
+        conversionsChange.className = `stat-change ${currentStats.conversionsChange >= 0 ? '' : 'negative'}`;
+        
+        const rateChange = document.getElementById('rateChange');
+        rateChange.textContent = `${currentStats.rateChange >= 0 ? '+' : ''}${currentStats.rateChange}%`;
+        rateChange.className = `stat-change ${currentStats.rateChange >= 0 ? '' : 'negative'}`;
+      }
+
+      function formatNumber(num) {
+        if (num >= 1000) {
+          return (num / 1000).toFixed(1) + 'K';
+        }
+        return num.toString();
+      }
+
+      function resetFilters() {
+        document.getElementById('dateFrom').value = '';
+        document.getElementById('dateTo').value = '';
+        document.getElementById('segmentSelect').value = 'all';
+        document.getElementById('linkSelect').value = 'all';
+        
+        currentFilters = {
+          dateFrom: '',
+          dateTo: '',
+          segment: 'all',
+          link: 'all'
+        };
+        
+        // Возвращаем статистику по умолчанию
+        currentStats = {
+          totalOpens: 4280,
+          totalClicks: 1240,
+          totalConversions: 320,
+          avgRate: 28.9,
+          opensChange: 12,
+          clicksChange: 8,
+          conversionsChange: -3,
+          rateChange: 5
+        };
+        
+        updateStatsDisplay();
+        showNotification('Фильтры сброшены', 'info');
+      }
+
+      function applyFilters() {
+        updateAnalytics();
+      }
+
+      // Функции для таблицы рассылок
+      function renderMailingsTable() {
+        const tableBody = document.getElementById('mailingsTableBody');
+        tableBody.innerHTML = '';
+        
+        mailingsData.forEach(mailing => {
+          const percentage = mailing.sent > 0 ? ((mailing.clicks / mailing.sent) * 100).toFixed(1) : 0;
+          const isNegative = percentage < 5; // Если процент кликов меньше 5%, считаем негативным
+          
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${mailing.id}</td>
+            <td>${formatDate(mailing.date)}</td>
+            <td>
+              <div class="mailing-text">
+                <div class="mailing-text-truncated">${truncateText(mailing.text, 50)}</div>
+              </div>
+            </td>
+            <td>${formatNumber(mailing.sent)}</td>
+            <td>
+              <div class="click-stats">
+                <span class="click-absolute">${formatNumber(mailing.clicks)}</span>
+                <span class="click-percentage ${isNegative ? 'negative' : ''}">${percentage}%</span>
+              </div>
+            </td>
+            <td>
+              <span class="status-badge status-${mailing.status}">
+                ${getStatusText(mailing.status)}
+              </span>
+            </td>
+            <td>
+              <div class="table-actions">
+                <button class="table-btn" onclick="viewMailingDetails(${mailing.id})">Подробнее</button>
+                <button class="table-btn" onclick="resendMailing(${mailing.id})">Повторить</button>
+              </div>
+            </td>
+          `;
+          tableBody.appendChild(row);
+        });
+      }
+
+      function truncateText(text, maxLength) {
+        if (text.length <= maxLength) return text;
+        return text.substring(0, maxLength) + '...';
+      }
+
+      function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('ru-RU', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        });
+      }
+
+      function getStatusText(status) {
+        const statusMap = {
+          'sent': 'Отправлено',
+          'pending': 'В ожидании',
+          'failed': 'Ошибка'
+        };
+        return statusMap[status] || status;
+      }
+
+      function viewMailingDetails(id) {
+        const mailing = mailingsData.find(m => m.id === id);
+        if (mailing) {
+          showNotification(`Детали рассылки #${id}: "${truncateText(mailing.text, 30)}"`, 'info');
+        }
+      }
+
+      function resendMailing(id) {
+        showNotification(`Повторная отправка рассылки #${id}`, 'info');
+      }
+
+      function exportMailings() {
+        // Здесь была бы логика экспорта данных
+        showNotification('Экспорт данных рассылок в CSV начат', 'success');
+      }
+
+      // Утилиты
+      function showNotification(message, type = 'info') {
+        // Создаем уведомление если его нет
+        let notification = document.getElementById('notification');
+        if (!notification) {
+          notification = document.createElement('div');
+          notification.id = 'notification';
+          notification.className = 'notification';
+          notification.style.cssText = 'position: fixed; top: 20px; right: 20px; padding: 12px 16px; border-radius: var(--radius-md); background: var(--vk-green); color: white; font-size: 14px; z-index: 1000; transform: translateX(120%); transition: transform 0.3s ease; box-shadow: var(--shadow);';
+          document.body.appendChild(notification);
+        }
+        
+        notification.textContent = message;
+        
+        // Цвета для разных типов уведомлений
+        const colors = {
+          'success': 'var(--vk-green)',
+          'warning': '#ffb238',
+          'error': 'var(--vk-magenta)',
+          'info': 'var(--vk-blue)'
+        };
+        
+        notification.style.background = colors[type] || colors.info;
+        
+        // Показываем уведомление
+        notification.style.transform = 'translateX(0)';
+        
+        setTimeout(() => {
+          notification.style.transform = 'translateX(120%)';
+        }, 3000);
+      }
+
+      function showProfile() {
+        showNotification('Профиль пользователя', 'info');
+      }
+
+      function showSupport() {
+        showNotification('Открыта форма поддержки', 'info');
+      }
+
+      function showDocumentation() {
+        showNotification('Открыта документация', 'info');
+      }
+
+      // Поиск
+      document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          const query = this.value.trim();
+          if (query) {
+            showNotification(`Поиск: ${query}`, 'info');
+          }
+        }
+      });
+
+      // Добавляем стили для уведомления
+      const style = document.createElement('style');
+      style.textContent = `
+        .notification {
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          padding: 12px 16px;
+          border-radius: var(--radius-md);
+          background: var(--vk-green);
+          color: white;
+          font-size: 14px;
+          z-index: 1000;
+          transform: translateX(120%);
+          transition: transform 0.3s ease;
+          box-shadow: var(--shadow);
+        }
+      `;
+      document.head.appendChild(style);
+    </script>
+  </body>
+</html>
